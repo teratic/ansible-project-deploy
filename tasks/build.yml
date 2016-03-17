@@ -1,0 +1,37 @@
+---
+- include: "{{ project_deploy_build_before }}"
+  tags: deploy-build-before
+  when: project_deploy_build_before is defined
+
+- name: Remove unwanted files/folders from new release
+  file: "path={{ deploy_helper.new_release_path }}/{{ item }} state=absent"
+  with_items: project_deploy_unwanted_items
+
+- name: Copy project files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ deploy_helper.new_release_path }}/{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
+  with_items: project_deploy_files
+
+- name: Copy project templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ deploy_helper.new_release_path }}/{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
+  with_items: project_deploy_templates
+
+- name: Check if project folders exist
+  stat:
+    path: "{{ deploy_helper.current_path }}/{{ item }}"
+  register: project_folder_paths
+  with_items: project_copy_folders
+
+- name: Copy project folders
+  command: cp -rp {{ deploy_helper.current_path }}/{{ item.item }} {{ deploy_helper.new_release_path }}
+  with_items: project_folder_paths.results
+  when: item.stat.exists
+
+- include: "{{ project_deploy_build_after }}"
+  tags: deploy-build-after
+  when: project_deploy_build_after is defined

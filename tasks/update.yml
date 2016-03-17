@@ -1,0 +1,31 @@
+---
+- include: "{{ project_deploy_update_before }}"
+  tags: deploy-update-before
+  when: project_deploy_update_before is defined
+
+- include: update-git.yml
+  when: project_deploy_strategy == 'git'
+
+- name: Rsync project files
+  synchronize:
+    src: "{{ project_deploy_local_path }}"
+    dest: "{{ project_deploy_source_path }}"
+    rsync_timeout: "{{ project_deploy_synchronize_timeout }}"
+    delete: "{{ project_deploy_synchronize_delete }}"
+    recursive: yes
+  when: project_deploy_strategy == 'synchronize'
+
+- name: s3 download project files
+  s3:
+    bucket: "{{ project_deploy_s3_bucket }}"
+    mode: get
+    object: '{{ project_deploy_s3_path }}/{{ project_deploy_s3_filename }}'
+    dest: '{{ project_deploy_source_path }}/{{ project_deploy_final_filename|default(project_deploy_s3_filename) }}'
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    region: "{{ project_deploy_s3_region }}"
+  when: project_deploy_strategy == 's3'
+
+- include: "{{ project_deploy_update_after }}"
+  tags: deploy-update-after
+  when: project_deploy_update_after is defined

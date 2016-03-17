@@ -1,0 +1,18 @@
+---
+- include: "{{ project_deploy_finalize_before }}"
+  tags: deploy-finalize-before
+  when: project_deploy_finalize_before is defined
+
+- name: Finalize the deploy
+  deploy_helper:
+    path: "{{ project_deploy_root }}"
+    release: "{{ deploy_helper.new_release }}"
+    state: finalize
+
+- include: "{{ project_deploy_finalize_after }}"
+  tags: deploy-finalize-after
+  when: project_deploy_finalize_after is defined
+
+- debug:
+    msg: "{{ project_deploy_version }}@{{ git_clone.after | truncate(7, True, '') }} deployed as release {{ deploy_helper.new_release }}"
+  when: project_deploy_strategy == 'git'

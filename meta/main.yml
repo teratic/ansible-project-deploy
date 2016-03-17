@@ -1,0 +1,24 @@
+galaxy_info:
+  author: Marcos Lois Bermúdez
+  description: Manage common steps to deploy projects
+  company: TeraTIC
+  license: LGPL
+  min_ansible_version: 1.9
+
+  platforms:
+  - name: EL
+    versions:
+    - all
+  - name: Fedora
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+
+  galaxy_tags: []
+
+dependencies: []

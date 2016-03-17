@@ -1,0 +1,15 @@
+---
+- include: "{{ project_deploy_before }}"
+  tags: deploy-before
+  when: project_deploy_before is defined
+
+- include: initialize.yml
+- include: update.yml
+- include: prepare.yml
+- include: build.yml
+- include: share.yml
+- include: finalize.yml
+
+- include: "{{ project_deploy_after }}"
+  tags: deploy-after
+  when: project_deploy_after is defined
