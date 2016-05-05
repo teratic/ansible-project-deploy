@@ -10,13 +10,13 @@
 
 - name: Check for project repo subtree
   stat:
-    path: "{{ project_deploy_source_path }}/{{ project_deploy.repo_subtree_path }}"
+    path: "{{ project_deploy_source_path }}/{{ project_deploy_subtree_path }}"
   register: project_subtree_full_path
-  when: project_deploy.repo_subtree_path is defined
+  when: project_deploy_subtree_path is defined
 
-- name: Fail if repo_subtree_path is set incorrectly
+- name: Fail if project_deploy_subtree_path is set incorrectly
   fail:
-    msg: "repo subtree is set to '{{ project.repo_subtree_path }}' but that path does not exist in the repo. Edit `repo_subtree_path` for '{{ site }}' in `wordpress_sites.yml`."
+    msg: "repo subtree is set to '{{ project_deploy_subtree_path }}' but that path does not exist in the repo."
   when: project_subtree_full_path is defined and not project_subtree_full_path.stat.exists
 
 - name: Create new release dir
@@ -28,13 +28,13 @@
   shell: git archive {{ project_deploy_version }} | tar xf - -C {{ deploy_helper.new_release_path }}
   args:
     chdir: "{{ project_deploy_source_path }}"
-  when: project_deploy_strategy == 'git' and project_deploy.repo_subtree_path is not defined
+  when: project_deploy_strategy == 'git' and project_deploy_subtree_path is not defined
 
 - name: Run git archive with subdirectory to populate new build dir
-  shell: git archive {{ project_deploy_version }} {{ project_deploy.repo_subtree_path }} | tar -x --strip-components {{ project_deploy.repo_subtree_path.split('/') | count }} -f - -C {{ deploy_helper.new_release_path }}
+  shell: git archive {{ project_deploy_version }} {{ project_deploy_subtree_path }} | tar -x --strip-components {{ project_deploy_subtree_path.split('/') | count }} -f - -C {{ deploy_helper.new_release_path }}
   args:
     chdir: "{{ project_deploy_source_path }}"
-  when: project_deploy_strategy == 'git' and project_deploy.repo_subtree_path is defined
+  when: project_deploy_strategy == 'git' and project_deploy_subtree_path is defined
 
 - include: "{{ project_deploy_prepare_after }}"
   tags: deploy-prepare-after
