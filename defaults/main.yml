@@ -10,6 +10,9 @@
 # - you can set the git ref to deploy (can be a branch, tag or commit hash)
 project_deploy_version: "master"
 
+# Number of old versions to keep
+project_deploy_keep_releases: 5
+
 # If you use the "rsync" strategy:
 # - you can set a timeout for the synchonize module
 project_deploy_synchronize_timeout: 30
