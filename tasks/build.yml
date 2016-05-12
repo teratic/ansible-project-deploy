@@ -22,9 +22,7 @@
   with_items: "{{ project_deploy_templates }}"
 
 - name: Copy project version folders
-  copy:
-    src: "{{ deploy_helper.current_path }}/{{ item }}"
-    dest: "{{ deploy_helper.new_release_path }}/{{ item }}"
+  command: "cp -rp {{ deploy_helper.current_path }}/{{ item }} {{ deploy_helper.new_release_path }}/{{ item }}"
   with_items: "{{ project_deploy_copy_folders }}"
   ignore_errors: yes
 
